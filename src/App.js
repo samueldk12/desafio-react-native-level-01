@@ -40,13 +40,6 @@ export default function App() {
           renderItem={({ item : repository })=>(
             <View style={styles.repositoryContainer}>
               <Text style={styles.repository}>{repository.title}</Text>
-              {/* <View style={styles.techsContainer}>
-                {repository.techs.map(tech => (
-                  <Text key={tech} style={styles.tech}>
-                    {tech}
-                  </Text>
-                ))}
-              </View> */}
               <View style={styles.likesContainer}>
                 <Text
                   style={styles.likeText}
