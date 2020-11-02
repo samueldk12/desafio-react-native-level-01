@@ -11,19 +11,22 @@ import {
 } from "react-native";
 
 export default function App() {
-  const [ projects, setProjects ] = useState([]);
+  const [ repositories, setRepositories ] = useState([]);
 
   useEffect(()=>{
     api.get('repositories').then(response => {
-        setProjects(response.data);
-    });
+        setRepositories(response.data);
+    })
   },[])
-  async function handleLikeRepository(id) {
-    const response = await api.post(`repositories/${id}`);
-    
-    let project = response.data;
 
-    setProjects([...projects,project]); 
+  async function handleLikeRepository(id) {
+    const response = await api.post(`repositories/${id}/like`);
+
+    let indexRepository = repositories.findIndex( repository => repository.id == id);
+
+    repositories[indexRepository] = response.data;
+    
+    setRepositories([...repositories]); 
   }
 
   return (
@@ -32,28 +35,36 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <FlatList
           style={styles.repositoryContainer}
-          data={projects}
-          keyExtractor={project => project.id}
-          renderItem={({ item : project })=>{
-            <>
-              <Text style={styles.tech} key={project.id}>{project.title}</Text>
+          data={repositories}
+          keyExtractor={repository => repository.id}
+          renderItem={({ item : repository })=>(
+            <View style={styles.repositoryContainer}>
+              <Text style={styles.repository}>{repository.title}</Text>
+{/* 
+              <View style={styles.techsContainer}>
+                {repository.techs.map(tech => (
+                  <Text key={tech} style={styles.tech}>
+                    {tech}
+                  </Text>
+                ))}
+              </View> */}
               <View style={styles.likesContainer}>
                 <Text
                   style={styles.likeText}
-                  testID={project.id}
+                  testID={`repository-likes-${repository.id}`}
                 >
-                  {project.likes}
+                  {repository.likes} curtida
                 </Text>
-              </View>    
+              </View>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => handleLikeRepository(project.id)}
-                testID={project.id}
+                onPress={() => handleLikeRepository(repository.id)}
+                testID={`like-button-${repository.id}`}
               >
-              <Text style={styles.buttonText}>Curtir</Text>
+                <Text style={styles.buttonText}>Curtir</Text>
               </TouchableOpacity>
-            </>
-          }}
+            </View>
+          )}
         />
       </SafeAreaView>
     </>
